@@ -1,42 +1,17 @@
 
-
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-// import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-// import 'package:get/instance_manager.dart';
-// import 'package:get/state_manager.dart';
 import 'package:intl/intl.dart';
-import 'package:weatherappk/screens/dummy.dart';
-import 'package:weatherappk/screens/secocity.dart';
-import 'package:weatherappk/utilities/customs/currnet_weather.dart';
-// import 'package:clima/utilities/constants.dart';
-// import 'package:clima/services/weather.dart';
-// import 'package:weatherappk/services/weather.dart';
-import '../controller/global_controller.dart';
 import '../services/database.dart';
-import '../services/suggestion.dart';
 import '../services/weather.dart';
 import '../utilities/constants.dart';
 import '../utilities/customs/drawer.dart';
-import '../utilities/customs/header_widget.dart';
 import 'city_search_screen.dart';
 import 'package:http/http.dart' as http;
 
-import 'network_search.dart';
 
-Future fetchAlbum() async {
-  const apiKey = '9a7d3e1b5bf44bf2a500c40f7109ea05';
-  final response = await http.get(
-      Uri.parse('https://api.ipgeolocation.io/timezone?apiKey=$apiKey&location=Mountain View'));
-  if (response.statusCode == 200) {
-    print(jsonDecode(response.body)["date_time_txt"]);
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to load album');
-  }
-}
+
 
 class LocationScreen extends StatefulWidget {
 
@@ -53,6 +28,18 @@ class _LocationScreenState extends State<LocationScreen> {
   var MyDay = '';
 
   //Udemy's
+   Future fetchAlbum() async {
+     const apiKey = '9a7d3e1b5bf44bf2a500c40f7109ea05';
+     final response = await http.get(
+         Uri.parse('https://api.ipgeolocation.io/timezone?apiKey=$apiKey&location=$cityName'));
+     if (response.statusCode == 200) {
+       print(jsonDecode(response.body)["date_time_txt"]);
+       return jsonDecode(response.body);
+     } else {
+       throw Exception('Failed to load album');
+     }
+   }
+
    bool fav = false;
    bool c = false;
    bool color = false;
@@ -105,7 +92,7 @@ class _LocationScreenState extends State<LocationScreen> {
         cityName = '';
         return;
       }
-      double temp = weatherData['main']['temp'];
+      double temp = double.parse(weatherData['main']['temp'].toString());
       tempratureinC = temp.toInt();
        double feels = weatherData['main']['feels_like'];
       feelslike = feels.toDouble();
@@ -125,11 +112,6 @@ class _LocationScreenState extends State<LocationScreen> {
     });
   }
 
-  // final _controller = TextEditingController();
-
-  // final GlobalController globalController =
-  //     Get.put(GlobalController(), permanent: true);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -137,8 +119,6 @@ class _LocationScreenState extends State<LocationScreen> {
         image: DecorationImage(
           image: AssetImage('assets/images/background_android.png'),
           fit: BoxFit.fill,
-          // colorFilter: ColorFilter.mode(
-          //     Colors.white.withOpacity(0.8), BlendMode.dstATop),
         ),
       ),
       constraints: const BoxConstraints.expand(),
@@ -148,22 +128,12 @@ class _LocationScreenState extends State<LocationScreen> {
             width: 120,
             child: Image.asset('assets/logo/logo_splash.png'),
           ),
-          // automaticallyImplyLeading: true,
             actions:  [
               Padding(
                 padding: const EdgeInsets.only(right: 15),
                 child:
                 TextButton(
                   onPressed: () async {
-                    // await showSearch(context: context, delegate: AutoSearch());
-                    // final Suggestion? result =
-                    // final results =
-                    // await showSearch(context: context, delegate: AutoSearch());
-                    // if (result != null) {
-                    //   setState(() {
-                    //     _controller.text = result.description;
-                    //   });
-                    // }
                     var typedName = await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -193,18 +163,11 @@ class _LocationScreenState extends State<LocationScreen> {
         backgroundColor: Colors.transparent,
         drawer: const CustomWidget(),
         body: SafeArea(
-          // Obx(() => globalController.checkLoading().isTrue? const Center(
-          //   child: CircularProgressIndicator(),
-          // ):
           child: Stack(
             children: [
               Column(
                 children: [
                   const SizedBox(height: 45,),
-                  // Text(MyDay,
-                  // style: const TextStyle(
-                  //   color: Colors.white24,
-                  // ),),
                   FutureBuilder<dynamic>(
                       future: fetchAlbum(),
                       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -212,24 +175,13 @@ class _LocationScreenState extends State<LocationScreen> {
                           return Center(child: CircularProgressIndicator());
                         else if (snapshot.connectionState == ConnectionState.done) {
                           return Text('${snapshot.data['date_time_txt']}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white54,
                           ),);
                         } else
                           return Text("Error");
                       }),
                   const SizedBox(height: 15,),
-                  // FutureBuilder(
-                  //   future: fetchAlbum(),
-                  //   builder: (context, snapshot) {
-                  //     print("${snapshot.data['date_time_txt'].toString()}......");
-                  //     return Text('${snapshot.data['date_time_txt']}');
-                  //   },),
-                  // StreamBuilder(
-                  //   stream: MyDate,
-                  //     builder: (context,snapshot){
-                  //     return Text(snapshot.data['date_time_txt']);
-                  //     },),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -238,18 +190,8 @@ class _LocationScreenState extends State<LocationScreen> {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
-                      ),),
-                      // TextButton(
-                      //   onPressed: () async {
-                      //     var weatherData = await weather.getLocationWeather();
-                      //     updateUI(weatherData);
-                      //   },
-                      //   child: Text("${cityName},",
-                      //   style: const TextStyle(
-                      //     color: Colors.white,
-                      //   ),),
-                      //   // HeaderWidget(),
-                      // ),
+                      ),
+                      ),
                       Text(country,
                         style: const TextStyle(
                           color: Colors.white,
@@ -262,35 +204,13 @@ class _LocationScreenState extends State<LocationScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       fav
-                      ?GestureDetector(
-                        onTap: () {
-                          fav = false;
-                          _manager
-                              .insertFav(DataModel(
-                              cityName: cityName,
-                              country: country))
-                              .whenComplete(() {
-                            print("success");
-                          }).onError((error, stackTrace) {
-                            print(error.toString());
-                          });
-                        },
-                        child: const Icon(Icons.favorite_outline_rounded,
-                        color: Colors.white,),
-                        // Image(
-                        //   image: AssetImage(
-                        //     "images/favourite/icon_favourite.png",
-                        //   ),
-                        //   width: 40,
-                        //   height: 40,
-                        // ),
-                      )
-                      :GestureDetector(
+                      ?
+                      GestureDetector(
                         child: Icon(Icons.favorite,
-                        color: Colors.yellow.shade600,),
-                        onTap: (){
-                          fav = true;
-                          _manager
+                          color: Colors.yellow.shade600,),
+                        onTap: () async {
+                          fav = false;
+                          await  _manager
                               .deleteFav(DataModel(
                               cityName: cityName,
                               country: country))
@@ -299,14 +219,89 @@ class _LocationScreenState extends State<LocationScreen> {
                           }).onError((error, stackTrace) {
                             print(error.toString());
                           });
+                          setState(() {});
                         },
+                      )
+                      :GestureDetector(
+                        onTap: () async {
+                          fav = true;
+                          await _manager
+                              .insertFav(DataModel(
+                              cityName: cityName,
+                              country: country))
+                              .whenComplete(() {
+                            print("success");
+                          }).onError((error, stackTrace) {
+                            print(error.toString());
+                          });
+                          setState(() {});
+                        },
+                        child: const Icon(Icons.favorite_outline_rounded,
+                          color: Colors.white,),
                       ),
-                      const Text(
-                        "Add to favourite",
-                        style: TextStyle(
-                            color: Color.fromRGBO(255, 255, 255, 1),
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500),
+                      // GestureDetector(
+                      //                         onTap: () async {
+                      //                           fav = false;
+                      //                           await _manager
+                      //                               .insertFav(DataModel(
+                      //                               cityName: cityName,
+                      //                               country: country))
+                      //                               .whenComplete(() {
+                      //                             print("success");
+                      //                           }).onError((error, stackTrace) {
+                      //                             print(error.toString());
+                      //                           });
+                      //                           setState(() {});
+                      //                         },
+                      //                         child: const Icon(Icons.favorite_outline_rounded,
+                      //                         color: Colors.white,),
+                      //                         // Image(
+                      //                         //   image: AssetImage(
+                      //                         //     "images/favourite/icon_favourite.png",
+                      //                         //   ),
+                      //                         //   width: 40,
+                      //                         //   height: 40,
+                      //                         // ),
+                      //                       )
+                      //GestureDetector(
+                      //                         child: Icon(Icons.favorite,
+                      //                         color: Colors.yellow.shade600,),
+                      //                         onTap: () async {
+                      //                           fav = true;
+                      //                          await  _manager
+                      //                               .deleteFav(DataModel(
+                      //                               cityName: cityName,
+                      //                               country: country))
+                      //                               .whenComplete(() {
+                      //                             print("success Deletion");
+                      //                           }).onError((error, stackTrace) {
+                      //                             print(error.toString());
+                      //                           });
+                      //                          setState(() {});
+                      //                         },
+                      //                       )
+                      fav ? TextButton(
+                        onPressed: (){
+                          fav = true;
+                        },
+                        child: const Text(
+                          "Remove from favourites",
+                          style: TextStyle(
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ):TextButton(
+                        onPressed: (){
+                          fav = false;
+                        },
+                        child: const Text(
+                          "Add to favourite",
+                          style: TextStyle(
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500),
+                        ),
                       ),
                     ],
                   ),
@@ -325,7 +320,6 @@ class _LocationScreenState extends State<LocationScreen> {
                         onTap: (){
                           setState(() {
                             c = true;
-                            // color = true;
                           });
                         },
                         child: Container(
@@ -347,7 +341,6 @@ class _LocationScreenState extends State<LocationScreen> {
                         onTap: (){
                           setState(() {
                             c = false;
-                            // color = false;
                           });
                         },
                         child: Container(
@@ -361,7 +354,8 @@ class _LocationScreenState extends State<LocationScreen> {
                               style: TextStyle(
                                 color: Colors.redAccent,
                                 textBaseline: TextBaseline.alphabetic,
-                              ),),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -372,12 +366,8 @@ class _LocationScreenState extends State<LocationScreen> {
                   style: const TextStyle(
                     fontSize: 20,
                     color: Colors.white,
-                  ),),
-                  // Text(
-                  //   "$message in $cityName!",
-                  //   textAlign: TextAlign.right,
-                  //   style: kMessageTextStyle,
-                  // ),
+                  ),
+                  ),
                 ],
               ),
               Positioned(
@@ -390,29 +380,19 @@ class _LocationScreenState extends State<LocationScreen> {
                         ),
                       )
                   ),
-                  // color: Colors.white.withOpacity(0.1),
                   margin: const EdgeInsets.only(top: 20),
-                  //color: Colors.green,
-                  // height: 125,
                   height: MediaQuery.of(context).size.height * 0.15,
                   width: MediaQuery.of(context).size.width,
                   child: Container(
                     color: Colors.white.withOpacity(0.1),
                     child: Column(
-                      // color: Colors.white.withOpacity(0.1),
                       children: [
-                        // color: Colors.white.withOpacity(0.1),
-                        // const Divider(
-                        //   thickness: 1,
-                        //   color: Colors.white38,
-                        // ),
                         const SizedBox(height: 20,),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
                               Container(
-                                // color: Colors.white.withOpacity(0.2),
                                 margin: const EdgeInsets.only(left: 20),
                                 width: 20,
                                 height: 35,
@@ -433,9 +413,6 @@ class _LocationScreenState extends State<LocationScreen> {
                                         color: Colors.white,fontSize: 25,
                                       ),
                                     ),
-                                    // Text("$mintemprature - $maxtemprature",
-                                    //     style: const TextStyle(
-                                    //         color: Colors.white, fontSize: 25)),
                                   ],
                                 ),
                               ),
@@ -478,7 +455,7 @@ class _LocationScreenState extends State<LocationScreen> {
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 18)),
                                     Text("${humidity.toString()} %",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             color: Colors.white, fontSize: 25)),
                                   ],
                                 ),
@@ -501,33 +478,11 @@ class _LocationScreenState extends State<LocationScreen> {
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 18)),
                                     Text("${feelslike.toString()} °C",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             color: Colors.white, fontSize: 25)),
                                   ],
                                 ),
                               ),
-                              // Container(
-                              //   margin: const EdgeInsets.only(left: 20),
-                              //   width: 25,
-                              //   height: 30,
-                              //   child: Image.asset(
-                              //     "assets/fav/humidity.png",
-                              //     fit: BoxFit.fill,
-                              //   ),
-                              // ),
-                              // Padding(
-                              //   padding: const EdgeInsets.only(left: 20, right: 20),
-                              //   child: Column(
-                              //     children: const [
-                              //       Text("Humidity",
-                              //           style: TextStyle(
-                              //               color: Colors.white, fontSize: 18)),
-                              //       Text("47%",
-                              //           style: TextStyle(
-                              //               color: Colors.white, fontSize: 25)),
-                              //     ],
-                              //   ),
-                              // ),
                             ],
                           ),
                         )
@@ -545,6 +500,57 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 }
 
+// TextButton(
+//   onPressed: () async {
+//     var weatherData = await weather.getLocationWeather();
+//     updateUI(weatherData);
+//   },
+//   child: Text("${cityName},",
+//   style: const TextStyle(
+//     color: Colors.white,
+//   ),),
+//   // HeaderWidget(),
+// ),
+
+
+// Text("$mintemprature - $maxtemprature",
+//     style: const TextStyle(
+//         color: Colors.white, fontSize: 25)),
+
+// Container(
+//   margin: const EdgeInsets.only(left: 20),
+//   width: 25,
+//   height: 30,
+//   child: Image.asset(
+//     "assets/fav/humidity.png",
+//     fit: BoxFit.fill,
+//   ),
+// ),
+// Padding(
+//   padding: const EdgeInsets.only(left: 20, right: 20),
+//   child: Column(
+//     children: const [
+//       Text("Humidity",
+//           style: TextStyle(
+//               color: Colors.white, fontSize: 18)),
+//       Text("47%",
+//           style: TextStyle(
+//               color: Colors.white, fontSize: 25)),
+//     ],
+//   ),
+// ),
+
+// FutureBuilder(
+//   future: fetchAlbum(),
+//   builder: (context, snapshot) {
+//     print("${snapshot.data['date_time_txt'].toString()}......");
+//     return Text('${snapshot.data['date_time_txt']}');
+//   },),
+// StreamBuilder(
+//   stream: MyDate,
+//     builder: (context,snapshot){
+//     return Text(snapshot.data['date_time_txt']);
+//     },),
 
 // ListView(
 // scrollDirection: Axis.vertical,

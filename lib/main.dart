@@ -9,7 +9,10 @@ import 'package:weatherappk/screens/loading_screen.dart';
 Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
+      statusBarColor:
+      // Colors.black,
+      Color.fromRGBO(255, 255, 255, 0.15),
+      // Color.fromRGBO(147, 92, 177, 1),
     ),
   );
   WidgetsFlutterBinding.ensureInitialized();

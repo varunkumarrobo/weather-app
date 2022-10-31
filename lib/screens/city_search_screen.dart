@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weatherappk/utilities/constants.dart';
 
+import '../services/database.dart';
+
 class CityScreen extends StatefulWidget {
   @override
   _CityScreenState createState() => _CityScreenState();
@@ -8,6 +10,9 @@ class CityScreen extends StatefulWidget {
 
 class _CityScreenState extends State<CityScreen> {
   late String cityName;
+  late String country;
+  DatabaseManager _manager = DatabaseManager();
+
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +25,19 @@ class _CityScreenState extends State<CityScreen> {
             color: Colors.black,
           ),
           decoration: kTextFieldInputDecoration,
-          onChanged: (value) {
+          onChanged: (value) async {
             cityName = value;
+            country = value;
+            await _manager
+                .insertRecent(DataModel(
+                cityName: cityName,
+                country: country
+            ),)
+                .whenComplete(() {
+              print("success");
+            }).onError((error, stackTrace) {
+              print(error.toString());
+            });
           },
         ),
         // TextField(),
@@ -35,8 +51,10 @@ class _CityScreenState extends State<CityScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.pop(context, cityName);
+            onPressed: ()  async {
+              Navigator.pop(context, cityName,);
+
+              //setState(() {});
             },
             icon: const Icon(Icons.location_city),
             color: Colors.black,
@@ -44,49 +62,51 @@ class _CityScreenState extends State<CityScreen> {
         ],
       ),
       backgroundColor: Colors.white,
-      //body:
-      // SafeArea(
-      //   child: Column(
-      //     children: <Widget>[
-      //       Align(
-      //         alignment: Alignment.topLeft,
-      //         child: TextButton(
-      //           onPressed: () {
-      //             Navigator.pop(context);
-      //           },
-      //           child: const Icon(
-      //             Icons.arrow_back,
-      //             size: 50.0,
-      //           ),
-      //         ),
-      //       ),
-      //       Container(
-      //         padding: const EdgeInsets.all(10.0),
-      //         child: TextField(
-      //           style: const TextStyle(
-      //             color: Colors.black,
-      //           ),
-      //           decoration: kTextFieldInputDecoration,
-      //           onChanged: (value) {
-      //             cityName = value;
-      //           },
-      //         ),
-      //       ),
-      //       TextButton(
-      //         onPressed: () {
-      //           Navigator.pop(context, cityName);
-      //         },
-      //         child: const Text(
-      //           'Get Weather',
-      //           style: kButtonTextStyle,
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 }
+
+
+//body:
+// SafeArea(
+//   child: Column(
+//     children: <Widget>[
+//       Align(
+//         alignment: Alignment.topLeft,
+//         child: TextButton(
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//           child: const Icon(
+//             Icons.arrow_back,
+//             size: 50.0,
+//           ),
+//         ),
+//       ),
+//       Container(
+//         padding: const EdgeInsets.all(10.0),
+//         child: TextField(
+//           style: const TextStyle(
+//             color: Colors.black,
+//           ),
+//           decoration: kTextFieldInputDecoration,
+//           onChanged: (value) {
+//             cityName = value;
+//           },
+//         ),
+//       ),
+//       TextButton(
+//         onPressed: () {
+//           Navigator.pop(context, cityName);
+//         },
+//         child: const Text(
+//           'Get Weather',
+//           style: kButtonTextStyle,
+//         ),
+//       ),
+//     ],
+//   ),
+// ),
 
 
 //

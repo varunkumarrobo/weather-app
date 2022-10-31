@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:weatherappk/screens/favourites.dart';
-import 'package:weatherappk/screens/home_screen.dart';
 import 'package:weatherappk/screens/recent_search.dart';
 
 class CustomWidget extends StatelessWidget {
@@ -11,78 +10,81 @@ class CustomWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: const EdgeInsets.all(20.0),
-        children: [
-          // const DrawerHeader(
-          //   decoration: BoxDecoration(
-          //     color: Colors.white,
-          //   ), //BoxDecoration
-          //   // child: UserAccountsDrawerHeader(
-          //   //   decoration: BoxDecoration(color: Colors.green),
-          //   //   accountName: Text(
-          //   //     "Abhishek Mishra",
-          //   //     style: TextStyle(fontSize: 18),
-          //   //   ),
-          //   //   accountEmail: Text("abhishekm977@gmail.com"),
-          //   //   currentAccountPictureSize: Size.square(50),
-          //   //   currentAccountPicture: CircleAvatar(
-          //   //     backgroundColor: Color.fromARGB(255, 165, 255, 137),
-          //   //     child: Text(
-          //   //       "A",
-          //   //       style: TextStyle(fontSize: 30.0, color: Colors.blue),
-          //   //     ), //Text
-          //   //   ), //circleAvatar
-          //   // ), //UserAccountDrawerHeader
-          // ), //DrawerHeader
-          ListTile(
-            selectedTileColor: Colors.transparent,
-            // leading: const Icon(Icons.person),
-            title: const Text(' Home'),
-            onTap: () {
-              Navigator.pop(context);
-              // Navigator.pushReplacement(context,
-              //     MaterialPageRoute(builder: (context) => LocationScreen()));
-            },
-          ),
-          ListTile(
-            // leading: const Icon(Icons.book),
-            title: const Text(' Favourite'),
-            onTap: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const FavouriteScreens()));
-            },
-          ),
-          ListTile(
-            // leading: const Icon(Icons.workspace_premium),
-            title: const Text('Recent Search'),
-            onTap: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const RecentSearch()));
-            },
-          ),
-          // ListTile(
-          //   leading: const Icon(Icons.video_label),
-          //   title: const Text(' Saved Videos '),
-          //   onTap: () {
-          //     Navigator.pop(context);
-          //   },
-          // ),
-          // ListTile(
-          //   leading: const Icon(Icons.edit),
-          //   title: const Text(' Edit Profile '),
-          //   onTap: () {
-          //     Navigator.pop(context);
-          //   },
-          // ),
-          // ListTile(
-          //   leading: const Icon(Icons.logout),
-          //   title: const Text('LogOut'),
-          //   onTap: () {
-          //     Navigator.pop(context);
-          //   },
-          // ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(top: 60),
+        child: ListView(
+          padding: const EdgeInsets.all(20.0),
+          children: [
+            // const DrawerHeader(
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //   ), //BoxDecoration
+            //   // child: UserAccountsDrawerHeader(
+            //   //   decoration: BoxDecoration(color: Colors.green),
+            //   //   accountName: Text(
+            //   //     "Abhishek Mishra",
+            //   //     style: TextStyle(fontSize: 18),
+            //   //   ),
+            //   //   accountEmail: Text("abhishekm977@gmail.com"),
+            //   //   currentAccountPictureSize: Size.square(50),
+            //   //   currentAccountPicture: CircleAvatar(
+            //   //     backgroundColor: Color.fromARGB(255, 165, 255, 137),
+            //   //     child: Text(
+            //   //       "A",
+            //   //       style: TextStyle(fontSize: 30.0, color: Colors.blue),
+            //   //     ), //Text
+            //   //   ), //circleAvatar
+            //   // ), //UserAccountDrawerHeader
+            // ), //DrawerHeader
+            ListTile(
+              selectedTileColor: Colors.transparent,
+              // leading: const Icon(Icons.person),
+              title: const Text(' Home'),
+              onTap: () {
+                Navigator.pop(context);
+                // Navigator.pushReplacement(context,
+                //     MaterialPageRoute(builder: (context) => LocationScreen()));
+              },
+            ),
+            ListTile(
+              // leading: const Icon(Icons.book),
+              title: const Text(' Favourite'),
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const FavouriteScreens()));
+              },
+            ),
+            ListTile(
+              // leading: const Icon(Icons.workspace_premium),
+              title: const Text('Recent Search'),
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const RecentSearch()));
+              },
+            ),
+            // ListTile(
+            //   leading: const Icon(Icons.video_label),
+            //   title: const Text(' Saved Videos '),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //   },
+            // ),
+            // ListTile(
+            //   leading: const Icon(Icons.edit),
+            //   title: const Text(' Edit Profile '),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //   },
+            // ),
+            // ListTile(
+            //   leading: const Icon(Icons.logout),
+            //   title: const Text('LogOut'),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //   },
+            // ),
+          ],
+        ),
       ),
     );
   }

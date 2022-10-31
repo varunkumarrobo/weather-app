@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:weatherappk/screens/home_screen.dart';
 import 'package:weatherappk/screens/loading_screen.dart';
 import 'package:weatherappk/utilities/customs/mycard.dart';
-
 import '../services/database.dart';
 import '../services/weather.dart';
+import 'city_search_screen.dart';
 import 'network_search.dart';
 
 class FavouriteScreens extends StatefulWidget {
@@ -17,70 +18,59 @@ class FavouriteScreens extends StatefulWidget {
 }
 
 class _FavouriteState extends State<FavouriteScreens> {
-
+  bool fav = false;
   List<Map<String, dynamic>> favs = [];
   DatabaseManager _manager = DatabaseManager();
-  List<String> description = [];
+  List<String> weatherdescription = [];
   List<String> temp = [];
   List<String> images = [];
   @override
-  fetchFavs(isFav) async {
+  fetchFavs() async {
     WeatherModel weather = WeatherModel();
     favs = [];
-    description = [];
+    weatherdescription = [];
     temp = [];
     images = [];
     List<DataModel>? model;
-    if(isFav)
+    // if(isFav)
       model = await _manager.getFav();
-    else
-      model = await _manager.getRecent();
+    // else
+    //   model = await _manager.getRecent();
     for (var dataModel in model) {
       await WeatherModel.getCityWeather(dataModel.toJson()["cityName"]).then((value) async {
-        description.add(jsonDecode(value.body)["weather"][0]["description"]);
+        weatherdescription.add(jsonDecode(value.body)["weather"][0]["description"]);
         temp.add(jsonDecode(value.body)["main"]["temp"].toString());
         // images.add(ImageUtility.getImage(jsonDecode(value.body)["weather"][0]["icon"]));
       }).onError((error, stackTrace) {
         print(error.toString());
       });
       favs.add(dataModel.toJson());
+      print(favs);
     }
   }
-  // @override
-  // Future<void> GetlocationData() async {
-  //   WeatherModel weatherModel = WeatherModel();
-  //   var weatherData = await weatherModel.getLocationWeather();
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //         builder: (context) => LocationScreen(
-  //           locationWeather: weatherData,
-  //         )),
-  //   );
-  //   //  print(weatherData);
-  // }
-  //
-  // initState() {
-  //   GetlocationData();
-  // }
+
   @override
   Widget build(BuildContext context) {
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   const SystemUiOverlayStyle(
+    //     statusBarColor: Colors.black,
+    //   ),
+    // );
     // bool isFav = ["fav"] as String;
     return Scaffold(
-      // extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // toolbarHeight: 0,
+        // systemOverlayStyle: const SystemUiOverlayStyle(
+        //   statusBarColor: Colors.black,
+        // ),
         backgroundColor: Colors.white,
         leading:IconButton(
           onPressed: () {
-          // Navigator.pop(context);
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => LoadingScreen()));
         },
         icon: const Icon(Icons.arrow_back),
           color: Colors.black,
          ),
-        // backgroundColor: Colors.white,
            title: const Text("Favourite",
            style: TextStyle(
              fontSize: 20,
@@ -93,18 +83,20 @@ class _FavouriteState extends State<FavouriteScreens> {
             color: Colors.black,
             onPressed: () {
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const AutoSearch()));
+                  MaterialPageRoute(builder: (context) =>  CityScreen()));
             },),
         ],
       ),
       body: FutureBuilder<dynamic>(
-        future: fetchFavs(favs),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot){
+        future: fetchFavs(),
+        builder: (BuildContext context,
+            AsyncSnapshot<dynamic> snapshot){
           if(snapshot.connectionState == ConnectionState.waiting)
             return const Center(child: CircularProgressIndicator(),);
           else if(snapshot.connectionState == ConnectionState.done){
             return Stack(
-            children: [ Container(
+            children: [
+              Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/background_android.png'),
@@ -121,9 +113,9 @@ class _FavouriteState extends State<FavouriteScreens> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children:  [
-                     const Center(
-                      child: Text('10 City added as favourite',
-                      style: TextStyle(
+                       Center(
+                      child: Text('${favs.length} City added as favourite',
+                      style: const TextStyle(
                         color: Colors.white,
                       ),),
                     ),
@@ -154,8 +146,18 @@ class _FavouriteState extends State<FavouriteScreens> {
                                   ),),
                                 ),),
                                 const SizedBox(width: 15,),
-                                TextButton(onPressed: (){
-                                  Navigator.pop(context);
+                                TextButton(onPressed: ()  {
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> const FavouriteScreens()));
+                                  // Navigator.pop(context);
+                                   _manager.deleteAllFav().whenComplete(() {
+                                    print("Success deletion");
+                                    setState(() {
+                                      Navigator.pop(context);
+                                    });
+                                  }).onError((error, stackTrace) {
+                                    print(error.toString());
+                                  });
+                                  // setState(() {});
                                 }, child: Container(
                                   color: Colors.transparent,
                                   padding: const EdgeInsets.all(14),
@@ -170,29 +172,165 @@ class _FavouriteState extends State<FavouriteScreens> {
                           );
                     }, child: const Text('Remove All'),
                     ),
-                    // TextButton(onPressed: (){
-                    //
-                    // }, child: const Text('Remove All')),
                   ],
                 ),
                 // SizedBox(height: 4,),
                 Expanded(
                   child: Container(
+                    color: Colors.transparent,
+                    // color: Colors.white.withOpacity(0.1),
                     margin: const EdgeInsets.only(left: 15,right: 15),
                     child: ListView.builder(
-                      itemCount: 10,
+                      itemCount: favs.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return const MyCard();
+                          return SizedBox(
+                              height: 100,
+                              child: Card(
+                                  margin: const EdgeInsets.only(bottom: 2),
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero),
+                                  color: Colors.white24,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 30,top: 5),
+                                            child: Text('${favs[index]["cityName"].toString()},${favs[index]['country'].toString()}',
+                                              // "${favs[index]["cityName"]}, ${favs[index]["country"]}",
+                                              style: const TextStyle(
+                                                  color: Colors.yellow,
+                                                  fontSize: 25),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: SizedBox(
+                                              width: 290,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceAround,
+                                                children:  [
+                                                  Image.asset(
+                                                    'assets/conditions/mostly_sunny.png',
+                                                    // images[index],
+                                                    width: 22,
+                                                    height: 25,
+                                                  ),
+                                                  Text(
+                                                    // 'hi',
+                                                    "${temp}°C",
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 22),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 150,
+                                                    child: Text(
+                                                        // 'hi',
+                                                        "${weatherdescription}",
+                                                        style: const TextStyle(
+                                                            color:
+                                                            Colors.white,
+                                                            fontSize: 18)),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      fav
+                                          ?
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: GestureDetector(
+                                          child: Icon(Icons.favorite,
+                                            color: Colors.yellow.shade600,),
+                                          onTap: () async {
+                                            fav = false;
+                                            await  _manager
+                                                .deleteFav(DataModel(
+                                                cityName: favs[index]['cityName'],
+                                                country: favs[index]['country']))
+                                                .whenComplete(() {
+                                              print("success Deletion");
+                                            }).onError((error, stackTrace) {
+                                              print(error.toString());
+                                            });
+                                            setState(() {});
+                                          },
+                                        ),
+                                      )
+                                          :Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: GestureDetector(
+                                            onTap: () async {
+                                            fav = true;
+                                            await _manager
+                                                .insertFav(DataModel(
+                                                cityName: favs[index]['cityName'],
+                                                country: favs[index]['country']))
+                                                .whenComplete(() {
+                                              print("success");
+                                            }).onError((error, stackTrace) {
+                                              print(error.toString());
+                                            });
+                                            setState(() {});
+                                        },
+                                        child: const Icon(Icons.favorite_outline_rounded,
+                                            color: Colors.white,),
+                                        // Image(
+                                        //   image: AssetImage(
+                                        //     "images/favourite/icon_favourite.png",
+                                        //   ),
+                                        //   width: 40,
+                                        //   height: 40,
+                                        // ),
+                                      ),
+                                          ),
+                                    ],
+                                  ),
+                              ),
+                          );
+                            // const MyCard();
                         },
                          ),
                   ),
                 ),
               ],
             )
-          ),],
+          ),
+            ],
         );
           } else return const Text('Error');},
       ),
     );
   }
 }
+
+
+// @override
+// Future<void> GetlocationData() async {
+//   WeatherModel weatherModel = WeatherModel();
+//   var weatherData = await weatherModel.getLocationWeather();
+//   Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//         builder: (context) => LocationScreen(
+//           locationWeather: weatherData,
+//         )),
+//   );
+//   //  print(weatherData);
+// }
+//
+// initState() {
+//   GetlocationData();
+// }

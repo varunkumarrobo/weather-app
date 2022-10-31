@@ -31,11 +31,19 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SpinKitDoubleBounce(
-          color: Colors.white,
-          size: 100,
+    return  Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/background_android.png'),
+            fit: BoxFit.fill,
+          ),
+        ),
+        child: const Center(
+          child: SpinKitDoubleBounce(
+            color: Colors.white,
+            size: 100,
+          ),
         ),
       ),
     );
